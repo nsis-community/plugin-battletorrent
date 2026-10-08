@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Build plug-in
+        uses: nsis-dev/release-package@d97a40353b77be7ebbc08524012befbf1275efd8 # v0.4.0
+        with:
+          name: BattleTorrent
+          sources: |
+            Contrib/BattleTorrent/Script1.rc
+            Contrib/BattleTorrent/asyncdns.cpp
+            Contrib/BattleTorrent/connection.cpp
+            Contrib/BattleTorrent/httpget.cpp
+            Contrib/BattleTorrent/nsisdl.cpp
+            Contrib/BattleTorrent/util.cpp
+          targets: x86-ansi
+          release: ${{ github.event_name == 'release' }}
